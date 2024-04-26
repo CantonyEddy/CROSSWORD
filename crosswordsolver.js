@@ -2,20 +2,36 @@ const emptyPuzzle = `2001
 0..0
 1000
 0..0`;
-const words = ['casa','alan','ciao','anta'];
+const words = ['casa', 'alan', 'ciao', 'anta'];
 crosswordSolver(emptyPuzzle, words);
 
 function crosswordSolver(emptyPuzzle, words){
-    tabEmptyPuzzle = strToTab(emptyPuzzle);
-    tabEmptyPuzzle2 =  copieProfonde(tabEmptyPuzzle);
-    console.log(tabEmptyPuzzle);
-    solve(tabEmptyPuzzle, tabEmptyPuzzle2, words, 0);
+    let tabEmptyPuzzle = strToTab(emptyPuzzle);
+    let count = 0;
+    for (let i = 0; i < tabEmptyPuzzle.length; i++){
+        for (let j = 0; j < tabEmptyPuzzle[i].length; j++){
+            if (typeof tabEmptyPuzzle[i][j] === 'number'){
+                if (tabEmptyPuzzle[i][j] < 0 || tabEmptyPuzzle[i][j] > 2){
+                    console.log("error");
+                    return -1
+                }
+                count += tabEmptyPuzzle[i][j];
+            }
+        }
+    }
+    if (count != words.length){
+        console.log("error");
+        return -1
+    }
+    let tabEmptyPuzzle2 = copieProfonde(tabEmptyPuzzle);
+    let resulta = gridToString(solve(tabEmptyPuzzle, tabEmptyPuzzle2, words, 0));
+    console.log(resulta);
+
 }
 
 function solve(grid, grid2, words, index) {
-    console.log(grid);
     if (index === words.length) {
-        return true;
+        return grid;
     }
     for (let i = 0; i < grid2.length; i++) {
         for (let j = 0; j < grid2[i].length; j++) {
@@ -26,8 +42,9 @@ function solve(grid, grid2, words, index) {
                         newGrid = placeWord(i, j, "horizontal", newGrid, words[index]);
                         let newGrid2 = copieProfonde(grid2);
                         newGrid2[i][j]--;
-                        if (solve(newGrid, newGrid2, words, index + 1)) {
-                            return true;
+                        let result = solve(newGrid, newGrid2, words, index + 1);
+                        if (result) {
+                            return result;
                         }
                     }
                 }
@@ -37,8 +54,9 @@ function solve(grid, grid2, words, index) {
                         newGrid = placeWord(i, j, "horizontal", newGrid, words[index]);
                         let newGrid2 = copieProfonde(grid2);
                         newGrid2[i][j]--;
-                        if (solve(newGrid, newGrid2, words, index + 1)) {
-                            return true;
+                        let result = solve(newGrid, newGrid2, words, index + 1);
+                        if (result) {
+                            return result;
                         }
                     }
                 }
@@ -47,8 +65,9 @@ function solve(grid, grid2, words, index) {
                     newGrid = placeWord(i, j, "vertical", newGrid, words[index]);
                     let newGrid2 = copieProfonde(grid2);
                     newGrid2[i][j]--;
-                    if (solve(newGrid, newGrid2, words, index + 1)) {
-                        return true;
+                    let result = solve(newGrid, newGrid2, words, index + 1);
+                    if (result) {
+                        return result;
                     }
                 }
             }
@@ -119,6 +138,10 @@ function strToTab(str){
     }
     tab.push(tempoTab);
     return tab;
+}
+
+function gridToString(grid) {
+    return grid.map(row => row.join('')).join('\n');
 }
 
 function copieProfonde(tableau) {
